@@ -20,6 +20,8 @@ from charmhelpers.core import hookenv
 
 class EtcdClient(RelationBase):
     scope = scopes.GLOBAL
+    
+    auto_accessors = ['private-address']
 
     @hook('{requires:etcd}-relation-{joined,changed}')
     def changed(self):
