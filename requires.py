@@ -18,7 +18,7 @@ from charms.reactive import scopes
 from charmhelpers.core import hookenv
 
 
-class EtcdClient(RelationBase):
+class JujuInfoClient(RelationBase):
     scope = scopes.GLOBAL
     
     auto_accessors = ['private-address']
