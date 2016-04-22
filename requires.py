@@ -20,17 +20,15 @@ from charmhelpers.core import hookenv
 
 class JujuInfoClient(RelationBase):
     scope = scopes.GLOBAL
-    
+
     auto_accessors = ['private-address']
 
-    @hook('{requires:etcd}-relation-{joined,changed}')
+    @hook('{requires:juju-info}-relation-{joined,changed}')
     def changed(self):
         self.set_state('{relation_name}.connected')
         self.set_state('{relation_name}.available')
 
-    @hook('{requires:etcd}-relation-{broken, departed}')
+    @hook('{requires:juju-info}-relation-{broken, departed}')
     def broken(self):
         self.remove_state('{relation_name}.available')
         self.remove_state('{relation_name}.connected')
-
-
