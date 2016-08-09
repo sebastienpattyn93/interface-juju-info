@@ -31,6 +31,6 @@ requires:
 The respective states in your charm would then be:
 
 ```python
-@when_any('host-system.available', 'host-system.conneted')
+@when_any('host-system.available', 'host-system.connected')
 ```
 
