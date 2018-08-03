@@ -11,24 +11,30 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from charms.reactive import RelationBase
-from charms.reactive import hook
-from charms.reactive import scopes
-
-from charmhelpers.core import hookenv
+from charms.reactive import Endpoint
+from charms.reactive import when, when_not, set_flag, clear_flag
 
 
-class JujuInfoClient(RelationBase):
-    scope = scopes.GLOBAL
-
-    auto_accessors = ['private-address']
-
-    @hook('{requires:juju-info}-relation-{joined,changed}')
+class JujuInfoClient(Endpoint):
+    @when('endpoint.{endpoint_name}.joined')
     def changed(self):
-        self.set_state('{relation_name}.connected')
-        self.set_state('{relation_name}.available')
+        set_flag(self.expand_name('{endpoint_name}.connected'))
+        set_flag(self.expand_name('{endpoint_name}.available'))
 
-    @hook('{requires:juju-info}-relation-{broken, departed}')
+    @when_not('endpoint.{endpoint_name}.joined')
     def broken(self):
-        self.remove_state('{relation_name}.available')
-        self.remove_state('{relation_name}.connected')
+        clear_flag(self.expand_name('{endpoint_name}.available'))
+        clear_flag(self.expand_name('{endpoint_name}.connected'))
+
+    def get_private_address(self):
+        """
+        Deprecated.
+        """
+        return self.all_joined_units[0]['private-address']
+
+    @property
+    def unit_count(self):
+        """
+        Number of joined units.
+        """
+        return len(self.all_joined_units)
