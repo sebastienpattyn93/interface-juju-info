@@ -38,3 +38,44 @@ class JujuInfoClient(Endpoint):
         Number of joined units.
         """
         return len(self.all_joined_units)
+
+    @property
+    def addresses(self):
+        """
+        A flat list of all addresses received from related apps / units.
+
+        This list is de-duplicated and sorted by address, so it will be stable
+        for change comparison. If you need to know which app / unit an address
+        comes from, see `received_addresses_map`.
+
+        Note: This uses ingress-address, so it will work with cross-model
+        relations.
+        """
+        addrs = {u.recieved_raw['ingress-address']
+                 for u in self.all_joined_units}
+        return list(sorted(addrs))
+
+    @property
+    def addresses_map(self):
+        """
+        A nested dictionary of all addresses received from related apps / units
+        by app name then unit name.
+
+        For example::
+
+            {
+                'app1': {
+                    'app1/0': '10.0.0.1',
+                    'app1/1': '10.0.0.2',
+                }
+            }
+
+        Note: This uses ingress-address, so it will work with cross-model
+        relations.
+        """
+        return {
+            r.application_name: {
+                u.unit_name: u.recieved_raw['ingress-address']
+                for u in r.joined_units
+            } for r in self.relations
+        }
